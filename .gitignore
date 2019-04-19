@@ -1,0 +1,16 @@
+*
+
+!.gitignore
+
+!*/
+
+!*.cpp
+!*.hpp
+!*.h
+!*.ksy
+
+!*.pro
+!*.pri
+
+kaitai-struct-compiler
+libs
