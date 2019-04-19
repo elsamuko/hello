@@ -8,6 +8,8 @@ SOURCES += $${KAITAI_DIR}/kaitaistream.cpp
 
 # configure kaitai as extra MOC
 # https://doc.qt.io/qt-5/qmake-advanced-usage.html#adding-compilers
+
+# latest via https://dl.bintray.com/kaitai-io/universal_unstable/
 KAITAI_MOC=$${MAIN_DIR}/kaitai-struct-compiler/bin/kaitai-struct-compiler
 
 kaitai.output = ${QMAKE_FILE_PATH}$${DIR_SEPARATOR}${QMAKE_FILE_BASE}.cpp ${QMAKE_FILE_PATH}$${DIR_SEPARATOR}${QMAKE_FILE_BASE}.h
