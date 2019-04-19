@@ -6,6 +6,8 @@
 
 #include <boost/endian/conversion.hpp>
 
+#include <kaitai/tls_client_hello.h>
+
 #include <string>
 #include <iostream>
 #include <iomanip>
@@ -55,6 +57,11 @@ void read_ClientHello( const boost::system::error_code& /*ec*/,
 
     LOG( bytes_transferred << "B" );
     LOG( dump( bytes_transferred, reinterpret_cast<const uint8_t*>( dataHello.data() ) ) );
+
+    // std::string withOffset = dataHello.substr( 4 );
+    // kaitai::kstream ks( withOffset );
+    // tls_client_hello_t kaitai_hello( &ks );
+    // LOG( "major: " << kaitai_hello.version()->gnu_dev_major() );
 
     const TLSHello* hello = reinterpret_cast<const TLSHello*>( dataHello.data() );
     LOG( "\n" );
