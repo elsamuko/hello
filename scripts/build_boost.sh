@@ -16,6 +16,7 @@ case $(uname) in
 esac
 
 PROJECT=boost
+NEEDED_LIBS="--with-system --with-test"
 VERSION="1.70.0"
 VERSION_DL="${VERSION//./_}"
 DL_URL="https://dl.bintray.com/boostorg/release/${VERSION}/source/boost_${VERSION_DL}.tar.gz" 
@@ -61,12 +62,14 @@ function macBuild {
     # debug
     ./b2 -j 8 --stagedir=stage_debug toolset=clang variant=debug \
         link=static threading=multi address-model=64 \
-        cxxflags="-std=c++1z -stdlib=libc++ -mmacosx-version-min=10.10" linkflags="-lc++"
+        cxxflags="-std=c++1z -stdlib=libc++ -mmacosx-version-min=10.10" linkflags="-lc++" \
+        $NEEDED_LIBS
 
     # release
     ./b2 -j 8 --stagedir=stage_release toolset=clang variant=release \
         link=static threading=multi address-model=64 \
-        cxxflags="-std=c++1z -msse2 -oFast -stdlib=libc++ -mmacosx-version-min=10.10" linkflags="-lc++ -flto"
+        cxxflags="-std=c++1z -msse2 -oFast -stdlib=libc++ -mmacosx-version-min=10.10" linkflags="-lc++ -flto" \
+        $NEEDED_LIBS
 }
 
 function winBuild {
@@ -76,12 +79,14 @@ function winBuild {
 
     # debug
     ./b2.exe -j 8 --stagedir=stage_debug   toolset=msvc-14.1 variant=debug   \
-        link=static runtime-link=static threading=multi address-model=64
+        link=static runtime-link=static threading=multi address-model=64 \
+        $NEEDED_LIBS
 
     # release
     ./b2.exe -j 8 --stagedir=stage_release toolset=msvc-14.1 variant=release \
         link=static runtime-link=static threading=multi address-model=64 \
-        cxxflags="/Qpar /Ox /Ob2 /Oi /Ot /Oy /GT /GL" linkflags="/LTCG /OPT:REF /OPT:ICF"
+        cxxflags="/Qpar /Ox /Ob2 /Oi /Ot /Oy /GT /GL" linkflags="/LTCG /OPT:REF /OPT:ICF" \
+        $NEEDED_LIBS
 }
 
 function linuxBuild {
@@ -92,12 +97,14 @@ function linuxBuild {
     # debug
     ./b2 -j 8 --disable-icu --stagedir=stage_debug toolset=gcc variant=debug \
         link=static threading=multi address-model=64 \
-        cxxflags="-std=c++17"
+        cxxflags="-std=c++17" \
+        $NEEDED_LIBS
 
     # release
     ./b2 -j 8 --disable-icu --stagedir=stage_release toolset=gcc variant=release \
         link=static threading=multi address-model=64 \
-        cxxflags="-std=c++17 -msse2 -oFast" linkflags="-flto"
+        cxxflags="-std=c++17 -msse2 -oFast" linkflags="-flto" \
+        $NEEDED_LIBS
 }
 
 function doCopy {
