@@ -6,11 +6,12 @@
 
 #include <boost/endian/conversion.hpp>
 
-#include <kaitai/tls_client_hello.h>
-
 #include <string>
 #include <iostream>
 #include <iomanip>
+
+#include "kaitai/tls_client_hello.h"
+#include "ciphers.hpp"
 
 #define LOG( A ) std::cout << A << std::endl;
 #define LOG_DEBUG( A ) LOG( A )
@@ -54,13 +55,6 @@ std::string dump( const std::string& data ) {
     return dump( data.size(), data.data() );
 }
 
-typedef struct __attribute__( ( packed ) ) {
-    uint8_t type; // 0x01
-    uint32_t size : 24;
-    uint16_t version;
-    uint8_t random[32];
-} TLSHello;
-
 void dumpHello( std::string& hello ) {
 
     // pass to kaitai generated parser
@@ -76,6 +70,7 @@ void dumpHello( std::string& hello ) {
 
     for( const uint16_t& suite : *parsed.cipher_suites()->cipher_suites() ) {
         LOG( "    suite         : " << dump( 2, &suite ) );
+        // LOG( "                    " << ciphersuite::ciphers[suite] );
     }
 
     LOG( "compression   : " << dump( parsed.compression_methods()->compression_methods() ) );
@@ -83,6 +78,25 @@ void dumpHello( std::string& hello ) {
     for( const std::unique_ptr<tls_client_hello_t::extension_t>& extension : *parsed.extensions()->extensions() ) {
         uint16_t type = extension->type();
         LOG( "    extension     : " << dump( 2, &type ) );
+
+        // SNI
+        if( extension->type() == 0 ) {
+            tls_client_hello_t::sni_t* sni = reinterpret_cast<tls_client_hello_t::sni_t*>( extension->body() );
+
+            for( const std::unique_ptr<tls_client_hello_t::server_name_t>& name : *sni->server_names() ) {
+                LOG( "        server name   : " << name->host_name() );
+            }
+        }
+
+        // ALPN
+        if( extension->type() == 16 ) {
+            tls_client_hello_t::alpn_t* alpn = reinterpret_cast<tls_client_hello_t::alpn_t*>( extension->body() );
+
+            for( const std::unique_ptr<tls_client_hello_t::protocol_t>& protocol : *alpn->alpn_protocols() ) {
+                LOG( "        alpn protocol  : " << protocol->name() );
+            }
+        }
+
     }
 }
 
@@ -91,15 +105,9 @@ void read_ClientHello( const boost::system::error_code& /*ec*/,
 
     LOG( bytes_transferred << "B" );
     // LOG( dump( bytes_transferred, reinterpret_cast<const uint8_t*>( dataHello.data() ) ) );
+
     std::string withOffset = dataHello.substr( 4 );
     dumpHello( withOffset );
-
-    const TLSHello* hello = reinterpret_cast<const TLSHello*>( dataHello.data() );
-    LOG( "\n" );
-    LOG( "Type          : " << std::hex << static_cast<int>( hello->type ) );
-    LOG( "Hello Size    : " << std::dec << toLittleEndianfrom3Bytes( hello->size ) );
-    LOG( "Hello Version : " << std::hex << boost::endian::big_to_native( hello->version ) );
-    LOG( "Random        : " << dump( 32, hello->random ) );
 
     LOG_DEBUG( "\nShutting down connection" );
     tcp_socket.shutdown( boost::asio::ip::tcp::socket::shutdown_send );
@@ -137,7 +145,7 @@ void accept_handler( const boost::system::error_code& ec ) {
 }
 
 // trigger with
-// openssl s_client -connect localhost:2014
+// openssl s_client -servername "localhost" -connect localhost:2014
 int main() {
     tcp_acceptor.listen();
     tcp_acceptor.async_accept( tcp_socket, accept_handler );

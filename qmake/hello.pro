@@ -9,7 +9,11 @@ include( setup.pri )
 SRC_DIR=$${MAIN_DIR}/src
 INCLUDEPATH += $${SRC_DIR}
 
-SOURCES += $$SRC_DIR/main.cpp
+SOURCES += $${SRC_DIR}/main.cpp
+
+# ./scripts/cipher_suites.sh > src/ciphers.hpp
+HEADERS += $${SRC_DIR}/ciphers.hpp
+
 linux: LIBS += -lpthread
 
 # tls header parser
