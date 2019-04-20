@@ -31,11 +31,16 @@ uint32_t toLittleEndianfrom3Bytes( uint32_t size ) {
     return result;
 }
 
-std::string dump( const size_t size, const uint8_t* data ) {
+std::string dump( const size_t size, const void* data ) {
     std::stringstream out;
+    const uint8_t* casted = reinterpret_cast<const uint8_t*>( data );
 
     for( size_t i = 0; i < size; ) {
-        out << std::setw( 2 ) << std::setfill( '0' ) << std::hex << static_cast<int>( data[i] ) << " ";
+        out << std::setw( 2 )
+            << std::setfill( '0' )
+            << std::hex
+            << static_cast<int>( casted[i] )
+            << " ";
 
         if( ++i % 16 == 0 ) {
             out << std::endl;
@@ -45,6 +50,10 @@ std::string dump( const size_t size, const uint8_t* data ) {
     return out.str();
 }
 
+std::string dump( const std::string& data ) {
+    return dump( data.size(), data.data() );
+}
+
 typedef struct __attribute__( ( packed ) ) {
     uint8_t type; // 0x01
     uint32_t size : 24;
@@ -52,16 +61,38 @@ typedef struct __attribute__( ( packed ) ) {
     uint8_t random[32];
 } TLSHello;
 
+void dumpHello( std::string& hello ) {
+
+    // pass to kaitai generated parser
+    kaitai::kstream ks( hello );
+    tls_client_hello_t parsed( &ks );
+
+    // dump
+    LOG( "major         : " << static_cast<int>( parsed.version()->major() ) );
+    LOG( "minor         : " << static_cast<int>( parsed.version()->minor() ) );
+    LOG( "random TS     : " << static_cast<size_t>( parsed.random()->gmt_unix_time() ) );
+    LOG( "random        : " << dump( parsed.random()->random() ) );
+    LOG( "session ID    : [" << dump( parsed.session_id()->sid() ) << "]" );
+
+    for( const uint16_t& suite : *parsed.cipher_suites()->cipher_suites() ) {
+        LOG( "    suite         : " << dump( 2, &suite ) );
+    }
+
+    LOG( "compression   : " << dump( parsed.compression_methods()->compression_methods() ) );
+
+    for( const std::unique_ptr<tls_client_hello_t::extension_t>& extension : *parsed.extensions()->extensions() ) {
+        uint16_t type = extension->type();
+        LOG( "    extension     : " << dump( 2, &type ) );
+    }
+}
+
 void read_ClientHello( const boost::system::error_code& /*ec*/,
                        std::size_t bytes_transferred ) {
 
     LOG( bytes_transferred << "B" );
-    LOG( dump( bytes_transferred, reinterpret_cast<const uint8_t*>( dataHello.data() ) ) );
-
-    // std::string withOffset = dataHello.substr( 4 );
-    // kaitai::kstream ks( withOffset );
-    // tls_client_hello_t kaitai_hello( &ks );
-    // LOG( "major: " << kaitai_hello.version()->gnu_dev_major() );
+    // LOG( dump( bytes_transferred, reinterpret_cast<const uint8_t*>( dataHello.data() ) ) );
+    std::string withOffset = dataHello.substr( 4 );
+    dumpHello( withOffset );
 
     const TLSHello* hello = reinterpret_cast<const TLSHello*>( dataHello.data() );
     LOG( "\n" );
@@ -85,16 +116,16 @@ void read_TLSRecord( const boost::system::error_code& /*ec*/,
                      std::size_t bytes_transferred ) {
 
     LOG( bytes_transferred << "B" );
-    LOG( dump( bytes_transferred, reinterpret_cast<const uint8_t*>( dataTls.data() ) ) );
+    LOG( dump( dataTls ) );
 
     const TLSRecord* record = reinterpret_cast<const TLSRecord*>( dataTls.data() );
 
     LOG( "\n" );
-    LOG( "Type        : " << std::hex << static_cast<int>( record->content_type ) );
-    LOG( "TLS Version : " << std::hex << boost::endian::big_to_native( record->version ) );
-    LOG( "Length      : " << std::dec << boost::endian::big_to_native( record->length ) );
+    LOG( "Type          : " << std::hex << static_cast<int>( record->content_type ) );
+    LOG( "TLS Version   : " << std::hex << boost::endian::big_to_native( record->version ) );
+    LOG( "Length        : " << std::dec << boost::endian::big_to_native( record->length ) );
 
-    dataHello.resize( record->length );
+    dataHello.resize( boost::endian::big_to_native( record->length ) );
     boost::asio::async_read( tcp_socket, boost::asio::buffer( &dataHello[0], dataHello.size() ), read_ClientHello );
 }
 
