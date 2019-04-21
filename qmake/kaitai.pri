@@ -12,11 +12,17 @@ SOURCES += $${KAITAI_DIR}/kaitaistream.cpp
 # latest via https://dl.bintray.com/kaitai-io/universal_unstable/
 KAITAI_MOC=$${MAIN_DIR}/kaitai-struct-compiler/bin/kaitai-struct-compiler
 
-kaitai.output = ${QMAKE_FILE_PATH}$${DIR_SEPARATOR}${QMAKE_FILE_BASE}.cpp ${QMAKE_FILE_PATH}$${DIR_SEPARATOR}${QMAKE_FILE_BASE}.h
+kaitai.output = ${QMAKE_FILE_PATH}$${DIR_SEPARATOR}${QMAKE_FILE_BASE}.cpp
 kaitai.commands = $${KAITAI_MOC} -t cpp_stl --cpp-standard 11 --outdir ${QMAKE_FILE_PATH} ${QMAKE_FILE_NAME}
 kaitai.input = KAITAIS
 kaitai.variable_out = HEADERS GENERATED_SOURCES
 QMAKE_EXTRA_COMPILERS += kaitai
+
+kaitai_h.output = ${QMAKE_FILE_PATH}$${DIR_SEPARATOR}${QMAKE_FILE_BASE}.h
+kaitai_h.commands = $${KAITAI_MOC} -t cpp_stl --cpp-standard 11 --outdir ${QMAKE_FILE_PATH} ${QMAKE_FILE_NAME}
+kaitai_h.input = KAITAIS
+kaitai_h.variable_out = HEADERS
+QMAKE_EXTRA_COMPILERS += kaitai_h
 
 KAITAIS += $${KAITAI_DIR}/tls_client_hello.ksy
 DEFINES += KS_STR_ENCODING_NONE
