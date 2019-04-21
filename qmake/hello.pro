@@ -11,8 +11,8 @@ INCLUDEPATH += $${SRC_DIR}
 
 SOURCES += $${SRC_DIR}/main.cpp
 
-# ./scripts/cipher_suites.sh > src/ciphers.hpp
-HEADERS += $${SRC_DIR}/ciphers.hpp
+# ./scripts/cipher_suites.sh > src/ciphersuites.hpp
+HEADERS += $${SRC_DIR}/ciphersuites.hpp
 
 linux: LIBS += -lpthread
 
