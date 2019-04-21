@@ -11,7 +11,7 @@
 #include <iomanip>
 
 #include "kaitai/tls_client_hello.h"
-#include "ciphers.hpp"
+#include "ciphersuites.hpp"
 
 #define LOG( A ) std::cout << A << std::endl;
 #define LOG_DEBUG( A ) LOG( A )
@@ -55,6 +55,11 @@ std::string dump( const std::string& data ) {
     return dump( data.size(), data.data() );
 }
 
+template<class T>
+std::string dump( const T& t ) {
+    return dump( sizeof( T ), &t );
+}
+
 void dumpHello( std::string& hello ) {
 
     // pass to kaitai generated parser
@@ -69,15 +74,21 @@ void dumpHello( std::string& hello ) {
     LOG( "session ID    : [" << dump( parsed.session_id()->sid() ) << "]" );
 
     for( const uint16_t& suite : *parsed.cipher_suites()->cipher_suites() ) {
-        LOG( "    suite         : " << dump( 2, &suite ) );
-        // LOG( "                    " << ciphersuite::ciphers[suite] );
+        const auto it = ciphersuite::ciphers.find( suite );
+
+        if( it != ciphersuite::ciphers.cend() ) {
+            LOG( "    suite         : " << dump( boost::endian::native_to_big( suite ) )
+                 << " " << it->second );
+        } else {
+            LOG( "    suite         : " << dump( boost::endian::native_to_big( suite ) ) );
+        }
     }
 
     LOG( "compression   : " << dump( parsed.compression_methods()->compression_methods() ) );
 
     for( const std::unique_ptr<tls_client_hello_t::extension_t>& extension : *parsed.extensions()->extensions() ) {
         uint16_t type = extension->type();
-        LOG( "    extension     : " << dump( 2, &type ) );
+        LOG( "    extension     : " << dump( boost::endian::native_to_big( type ) ) );
 
         // SNI
         if( extension->type() == 0 ) {
