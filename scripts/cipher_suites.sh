@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-echo "
+echo "#pragma once
+
 #include <map>
 #include <array>
 
-uint16_t fromUint8_t( const std::array<uint8_t,2>& arr ) {
+inline uint16_t fromUint8_t( const std::array<uint8_t,2>& arr ) {
     uint16_t rv = 256u * arr[0] + arr[1];
     return rv;
 }

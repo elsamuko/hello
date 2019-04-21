@@ -4,6 +4,12 @@ meta:
   license: MIT
 
 seq:
+  - id: type
+    type: u1
+
+  - id: size
+    type: b24
+
   - id: version
     type: version
 
