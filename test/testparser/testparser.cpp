@@ -9,6 +9,7 @@ BOOST_AUTO_TEST_CASE( parse_good ) {
     Parser parser( data );
     BOOST_REQUIRE( parser.parse() );
     parser.dump();
+    BOOST_CHECK_EQUAL( parser.hello()->size(), 327 );
 }
 
 BOOST_AUTO_TEST_CASE( parse_bad ) {

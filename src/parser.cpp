@@ -100,3 +100,11 @@ void Parser::dump() {
 
     }
 }
+
+tls_client_hello_t* Parser::hello() const {
+    if( parsed ) {
+        return parsed.get();
+    }
+
+    return nullptr;
+}
