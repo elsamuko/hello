@@ -12,6 +12,8 @@
 !*.pro
 !*.pri
 
+src/kaitai/*.h
+src/kaitai/*.cpp
 kaitai-struct-compiler
 libs
 tmp
