@@ -37,9 +37,15 @@ std::string hex( const T& t ) {
 
 }
 
-void Parser::parse() {
-    kaitai::kstream ks( data );
-    parsed = std::make_unique<tls_client_hello_t>( &ks );
+bool Parser::parse() {
+    try {
+        kaitai::kstream ks( data );
+        parsed = std::make_unique<tls_client_hello_t>( &ks );
+    } catch( std::ios_base::failure ex ) {
+        LOG( "Failed to parse : " << ex.what() );
+    }
+
+    return !!parsed;
 }
 
 void Parser::dump() {

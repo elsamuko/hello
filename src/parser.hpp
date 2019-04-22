@@ -8,7 +8,7 @@ class Parser {
     public:
         Parser( const std::string& data_ ) :
             data( data_ ) {}
-        void parse();
+        bool parse();
         void dump();
     private:
         std::string data;
