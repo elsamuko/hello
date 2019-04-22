@@ -13,6 +13,9 @@
 #include "kaitai/tls_record.h"
 #include "log.hpp"
 
+// derived from
+// https://theboostcpplibraries.com/boost.asio-network-programming#ex.asio_06
+
 namespace {
 boost::asio::io_service ioservice;
 boost::asio::ip::tcp::acceptor tcp_acceptor{ioservice, {boost::asio::ip::tcp::v4(), 2014}};
