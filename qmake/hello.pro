@@ -19,6 +19,9 @@ HEADERS += $${SRC_DIR}/log.hpp
 HEADERS += $${SRC_DIR}/parser.hpp
 SOURCES += $${SRC_DIR}/parser.cpp
 
+HEADERS += $${SRC_DIR}/server.hpp
+SOURCES += $${SRC_DIR}/server.cpp
+
 linux: LIBS += -lpthread
 
 # tls header parser
