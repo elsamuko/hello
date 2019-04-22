@@ -10,6 +10,7 @@
 #include <boost/asio/ip/tcp.hpp>
 
 #include "parser.hpp"
+#include "kaitai/tls_record.h"
 #include "log.hpp"
 
 namespace {
@@ -20,9 +21,10 @@ std::string dataTls;
 std::string dataHello;
 }
 
-std::string dump( const size_t size, const void* data ) {
+std::string dump( const std::string& data ) {
     std::stringstream out;
-    const uint8_t* casted = reinterpret_cast<const uint8_t*>( data );
+    const uint8_t* casted = reinterpret_cast<const uint8_t*>( data.data() );
+    size_t size = data.size();
 
     for( size_t i = 0; i < size; ) {
         out << std::setw( 2 )
@@ -39,20 +41,11 @@ std::string dump( const size_t size, const void* data ) {
     return out.str();
 }
 
-std::string dump( const std::string& data ) {
-    return dump( data.size(), data.data() );
-}
-
-template<class T>
-std::string dump( const T& t ) {
-    return dump( sizeof( T ), &t );
-}
-
 void read_ClientHello( const boost::system::error_code& /*ec*/,
                        std::size_t bytes_transferred ) {
 
     LOG( bytes_transferred << "B" );
-    // LOG( dump( bytes_transferred, reinterpret_cast<const uint8_t*>( dataHello.data() ) ) );
+    LOG( dump( dataHello ) );
 
     Parser parser( dataHello );
     parser.parse();
@@ -62,33 +55,28 @@ void read_ClientHello( const boost::system::error_code& /*ec*/,
     tcp_socket.shutdown( boost::asio::ip::tcp::socket::shutdown_send );
 }
 
-// https://wiki.osdev.org/TLS_Handshake
-typedef struct __attribute__( ( packed ) ) {
-    uint8_t content_type;  // 0x16
-    uint16_t version;
-    uint16_t length;
-} TLSRecord;
-
 void read_TLSRecord( const boost::system::error_code& /*ec*/,
                      std::size_t bytes_transferred ) {
 
     LOG( bytes_transferred << "B" );
     LOG( dump( dataTls ) );
 
-    const TLSRecord* record = reinterpret_cast<const TLSRecord*>( dataTls.data() );
+    kaitai::kstream ks( dataTls );
+    tls_record_t kt_record( &ks );
 
     LOG( "\n" );
-    LOG( "Type          : " << std::hex << static_cast<int>( record->content_type ) );
-    LOG( "TLS Version   : " << std::hex << boost::endian::big_to_native( record->version ) );
-    LOG( "Length        : " << std::dec << boost::endian::big_to_native( record->length ) );
+    LOG( "Type          : " << std::hex << static_cast<int>( kt_record.type() ) );
+    LOG( "TLS Version   : " << std::hex << kt_record.version() );
+    LOG( "Length        : " << std::dec << kt_record.length() );
 
-    dataHello.resize( boost::endian::big_to_native( record->length ) );
+    dataHello.resize( kt_record.length() );
     boost::asio::async_read( tcp_socket, boost::asio::buffer( &dataHello[0], dataHello.size() ), read_ClientHello );
 }
 
 void accept_handler( const boost::system::error_code& ec ) {
     if( !ec ) {
-        dataTls.resize( sizeof( TLSRecord ) );
+        size_t TLSRecordSize = 5;
+        dataTls.resize( TLSRecordSize );
         boost::asio::async_read( tcp_socket, boost::asio::buffer( &dataTls[0], dataTls.size() ), read_TLSRecord );
     }
 }

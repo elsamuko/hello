@@ -24,5 +24,6 @@ kaitai_h.input = KAITAIS
 kaitai_h.variable_out = HEADERS
 QMAKE_EXTRA_COMPILERS += kaitai_h
 
-KAITAIS += $${KAITAI_DIR}/tls_client_hello.ksy
+KAITAIS += $${KAITAI_DIR}/tls_client_hello.ksy \
+           $${KAITAI_DIR}/tls_record.ksy
 DEFINES += KS_STR_ENCODING_NONE
