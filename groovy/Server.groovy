@@ -15,7 +15,7 @@ void dump(TlsClientHello hello) {
     println "size          : $hello.size"
     println "major         : $hello.version.major"
     println "minor         : $hello.version.minor"
-    println "random TS     : $hello.random.gmtUnixTime"
+    println "random TS     : ${new Date(1000 * hello.random.gmtUnixTime)}"
     println "random        : ${(hello.random.random as byte[]).encodeHex()}"
     println "session ID    : [${(hello.sessionId.sid as byte[]).encodeHex()}]"
     hello.cipherSuites.cipherSuites.each { Integer suite ->

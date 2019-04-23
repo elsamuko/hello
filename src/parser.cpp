@@ -2,6 +2,8 @@
 #include "log.hpp"
 
 #include <iomanip>
+#include <chrono>
+
 #include <boost/endian/conversion.hpp>
 
 #include "ciphersuites.hpp"
@@ -48,6 +50,13 @@ bool Parser::parse() {
     return !!parsed;
 }
 
+std::string toString( const std::time_t& t ) {
+    std::tm* tm = std::gmtime( &t );
+    std::stringstream stream;
+    stream << std::put_time( tm, "%F %T" );
+    return stream.str();
+}
+
 void Parser::dump() {
     if( !parsed ) {
         LOG( "parsed is null" );
@@ -59,7 +68,7 @@ void Parser::dump() {
     LOG( "size          : " << static_cast<int>( parsed->size() ) );
     LOG( "major         : " << static_cast<int>( parsed->version()->major() ) );
     LOG( "minor         : " << static_cast<int>( parsed->version()->minor() ) );
-    LOG( "random TS     : " << static_cast<size_t>( parsed->random()->gmt_unix_time() ) );
+    LOG( "random TS     : " << toString( parsed->random()->gmt_unix_time() ) );
     LOG( "random        : " << hex( parsed->random()->random() ) );
     LOG( "session ID    : [" << hex( parsed->session_id()->sid() ) << "]" );
 
