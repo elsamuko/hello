@@ -24,6 +24,8 @@ std::string dataTls;
 std::string dataHello;
 }
 
+void accept_handler( const boost::system::error_code& ec );
+
 std::string dump( const std::string& data ) {
     std::stringstream out;
     const uint8_t* casted = reinterpret_cast<const uint8_t*>( data.data() );
@@ -54,8 +56,9 @@ void read_ClientHello( const boost::system::error_code& /*ec*/,
     parser.parse();
     parser.dump();
 
-    LOG_DEBUG( "\nShutting down connection" );
-    tcp_socket.shutdown( boost::asio::ip::tcp::socket::shutdown_send );
+    LOG_DEBUG( "\nFinished" );
+    tcp_socket.close();
+    tcp_acceptor.async_accept( tcp_socket, accept_handler );
 }
 
 void read_TLSRecord( const boost::system::error_code& /*ec*/,
