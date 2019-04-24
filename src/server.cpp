@@ -17,9 +17,9 @@
 // https://theboostcpplibraries.com/boost.asio-network-programming#ex.asio_06
 
 namespace {
-boost::asio::io_service ioservice;
-boost::asio::ip::tcp::acceptor tcp_acceptor{ioservice, {boost::asio::ip::tcp::v4(), 2014}};
-boost::asio::ip::tcp::socket tcp_socket{ioservice};
+boost::asio::io_context iocontext;
+boost::asio::ip::tcp::socket tcp_socket{iocontext};
+boost::asio::ip::tcp::acceptor tcp_acceptor{iocontext, {boost::asio::ip::tcp::v4(), 2014}};
 std::string dataTls;
 std::string dataHello;
 }
@@ -76,19 +76,19 @@ void read_TLSRecord( const boost::system::error_code& /*ec*/,
     LOG( "Length        : " << std::dec << kt_record.length() );
 
     dataHello.resize( kt_record.length() );
-    boost::asio::async_read( tcp_socket, boost::asio::buffer( &dataHello[0], dataHello.size() ), read_ClientHello );
+    boost::asio::async_read( tcp_socket, boost::asio::buffer( dataHello ), read_ClientHello );
 }
 
 void accept_handler( const boost::system::error_code& ec ) {
     if( !ec ) {
         size_t TLSRecordSize = 5;
         dataTls.resize( TLSRecordSize );
-        boost::asio::async_read( tcp_socket, boost::asio::buffer( &dataTls[0], dataTls.size() ), read_TLSRecord );
+        boost::asio::async_read( tcp_socket, boost::asio::buffer( dataTls ), read_TLSRecord );
     }
 }
 
 void server::run() {
     tcp_acceptor.listen();
     tcp_acceptor.async_accept( tcp_socket, accept_handler );
-    ioservice.run();
+    iocontext.run();
 }
