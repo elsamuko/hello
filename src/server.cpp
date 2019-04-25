@@ -42,7 +42,9 @@ class Server {
     private:
         boost::asio::io_context iocontext;
         boost::asio::ip::tcp::socket tcp_socket{iocontext};
-        boost::asio::ip::tcp::acceptor tcp_acceptor{iocontext, {boost::asio::ip::tcp::v4(), 2014}};
+        boost::asio::ip::tcp::endpoint tcp_client_endpoint;
+        boost::asio::ip::tcp::endpoint tcp_server_endpoint{boost::asio::ip::tcp::v4(), 2014};
+        boost::asio::ip::tcp::acceptor tcp_acceptor{iocontext, tcp_server_endpoint};
         std::string dataTls;
         std::string dataHello;
 
@@ -84,6 +86,7 @@ class Server {
         void accept_handler( const boost::system::error_code& /*ec*/ ) {
             size_t TLSRecordSize = 5;
             dataTls.resize( TLSRecordSize );
+            LOG( tcp_server_endpoint << " << " << tcp_client_endpoint );
             boost::asio::async_read( tcp_socket,
                                      boost::asio::buffer( dataTls ),
                                      boost::bind( &Server::read_TLSRecord, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred ) );
@@ -93,6 +96,7 @@ class Server {
         Server() {
             tcp_acceptor.listen();
             tcp_acceptor.async_accept( tcp_socket,
+                                       tcp_client_endpoint,
                                        boost::bind( &Server::accept_handler, this, boost::asio::placeholders::error ) );
             iocontext.run();
         }
