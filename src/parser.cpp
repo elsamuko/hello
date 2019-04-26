@@ -7,6 +7,7 @@
 #include <boost/endian/conversion.hpp>
 
 #include "ciphersuites.hpp"
+#include "extensions.hpp"
 
 namespace  {
 std::string hex( const size_t size, const void* data ) {
@@ -72,6 +73,7 @@ void Parser::dump() {
     LOG( "random        : " << hex( parsed->random()->random() ) );
     LOG( "session ID    : [" << hex( parsed->session_id()->sid() ) << "]" );
 
+    // openssl ciphers -V
     for( const uint16_t& suite : *parsed->cipher_suites()->cipher_suites() ) {
         const auto it = ciphersuite::ciphers.find( suite );
 
@@ -85,16 +87,24 @@ void Parser::dump() {
 
     LOG( "compression   : " << hex( parsed->compression_methods()->compression_methods() ) );
 
+    // https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml
     for( const std::unique_ptr<tls_client_hello_t::extension_t>& extension : *parsed->extensions()->extensions() ) {
         uint16_t type = extension->type();
-        LOG( "    extension     : " << hex( boost::endian::native_to_big( type ) ) );
+        const auto it = extension::extensions.find( type );
+
+        if( it != ciphersuite::ciphers.cend() ) {
+            LOG( "    extension     : " << hex( boost::endian::native_to_big( type ) )
+                 << " " << it->second );
+        } else {
+            LOG( "    extension     : " << hex( boost::endian::native_to_big( type ) ) );
+        }
 
         // SNI
         if( extension->type() == 0 ) {
             tls_client_hello_t::sni_t* sni = reinterpret_cast<tls_client_hello_t::sni_t*>( extension->body() );
 
             for( const std::unique_ptr<tls_client_hello_t::server_name_t>& name : *sni->server_names() ) {
-                LOG( "        server name   : " << name->host_name() );
+                LOG( "        server_name   : " << name->host_name() );
             }
         }
 

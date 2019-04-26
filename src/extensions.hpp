@@ -1,0 +1,57 @@
+#pragma once
+
+#include <map>
+
+namespace extension {
+
+static std::map<uint16_t,const char*> extensions = {
+    { 0, "server_name" },
+    { 1, "max_fragment_length" },
+    { 2, "client_certificate_url" },
+    { 3, "trusted_ca_keys" },
+    { 4, "truncated_hmac" },
+    { 5, "status_request" },
+    { 6, "user_mapping" },
+    { 7, "client_authz" },
+    { 8, "server_authz" },
+    { 9, "cert_type" },
+    { 10, "supported_groups (renamed from elliptic_curves)" },
+    { 11, "ec_point_formats" },
+    { 12, "srp" },
+    { 13, "signature_algorithms" },
+    { 14, "use_srtp" },
+    { 15, "heartbeat" },
+    { 16, "application_layer_protocol_negotiation" },
+    { 17, "status_request_v2" },
+    { 18, "signed_certificate_timestamp" },
+    { 19, "client_certificate_type" },
+    { 20, "server_certificate_type" },
+    { 21, "padding" },
+    { 22, "encrypt_then_mac" },
+    { 23, "extended_master_secret" },
+    { 24, "token_binding" },
+    { 25, "cached_info" },
+    { 26, "tls_lts" },
+    { 27, "compress_certificate " },
+    { 28, "record_size_limit" },
+    { 29, "pwd_protect" },
+    { 30, "pwd_clear" },
+    { 31, "password_salt" },
+    { 35, "session_ticket (renamed from SessionTicket TLS)" },
+    { 41, "pre_shared_key" },
+    { 42, "early_data" },
+    { 43, "supported_versions" },
+    { 44, "cookie" },
+    { 45, "psk_key_exchange_modes" },
+    { 46, "Unassigned" },
+    { 47, "certificate_authorities" },
+    { 48, "oid_filters" },
+    { 49, "post_handshake_auth" },
+    { 50, "signature_algorithms_cert" },
+    { 51, "key_share" },
+    { 52, "transparency_info" },
+    { 65280, "Reserved for Private Use" },
+    { 65281, "renegotiation_info" },
+};
+}
+
