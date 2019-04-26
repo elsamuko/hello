@@ -97,6 +97,7 @@ class Server {
             tcp_server_endpoint{boost::asio::ip::tcp::v4(), 2014},
             tcp_acceptor{iocontext, tcp_server_endpoint} {
 
+            LOG( "Visit https://" << tcp_server_endpoint );
             tcp_acceptor.listen();
             tcp_acceptor.async_accept( tcp_socket,
                                        tcp_client_endpoint,
