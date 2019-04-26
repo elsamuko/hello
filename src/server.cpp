@@ -40,11 +40,10 @@ std::string dump( const std::string& data ) {
 
 class Server {
     private:
-        boost::asio::io_context iocontext;
-        boost::asio::ip::tcp::socket tcp_socket{iocontext};
+        boost::asio::ip::tcp::socket tcp_socket;
         boost::asio::ip::tcp::endpoint tcp_client_endpoint;
-        boost::asio::ip::tcp::endpoint tcp_server_endpoint{boost::asio::ip::tcp::v4(), 2014};
-        boost::asio::ip::tcp::acceptor tcp_acceptor{iocontext, tcp_server_endpoint};
+        boost::asio::ip::tcp::endpoint tcp_server_endpoint;
+        boost::asio::ip::tcp::acceptor tcp_acceptor;
         std::string dataTls;
         std::string dataHello;
 
@@ -93,15 +92,20 @@ class Server {
         }
 
     public:
-        Server() {
+        Server( boost::asio::io_context& iocontext ) :
+            tcp_socket{iocontext},
+            tcp_server_endpoint{boost::asio::ip::tcp::v4(), 2014},
+            tcp_acceptor{iocontext, tcp_server_endpoint} {
+
             tcp_acceptor.listen();
             tcp_acceptor.async_accept( tcp_socket,
                                        tcp_client_endpoint,
                                        boost::bind( &Server::accept_handler, this, boost::asio::placeholders::error ) );
-            iocontext.run();
         }
 };
 
 void server::run() {
-    Server server;
+    boost::asio::io_context iocontext;
+    Server server( iocontext );
+    iocontext.run();
 }
