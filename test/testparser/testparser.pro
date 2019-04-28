@@ -12,7 +12,7 @@ INCLUDEPATH+=$${HELLO_DIR}
 SOURCES += testparser.cpp
 HEADERS += $${SRC_DIR}/log.hpp
 
-include( $${MAIN_DIR}/qmake/parser.pri )
+include( $${MAIN_DIR}/qmake/clienthello/parser.pri )
 include( $${MAIN_DIR}/qmake/kaitai.pri )
 include( $${MAIN_DIR}/qmake/boost.pri )
 

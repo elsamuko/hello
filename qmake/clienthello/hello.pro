@@ -3,8 +3,8 @@ CONFIG += console c++17
 CONFIG -= app_bundle
 CONFIG -= qt
 
-MAIN_DIR=..
-include( setup.pri )
+MAIN_DIR=../..
+include( ../setup.pri )
 
 HELLO_DIR=$${SRC_DIR}/clienthello
 INCLUDEPATH+=$${HELLO_DIR}
@@ -16,7 +16,7 @@ include( parser.pri )
 include( server.pri )
 
 # tls header parser
-include( kaitai.pri )
-include( boost.pri )
+include( ../kaitai.pri )
+include( ../boost.pri )
 
 linux: LIBS += -lpthread
