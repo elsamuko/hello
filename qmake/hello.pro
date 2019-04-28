@@ -6,7 +6,11 @@ CONFIG -= qt
 MAIN_DIR=..
 include( setup.pri )
 
-SOURCES += $${SRC_DIR}/main.cpp
+HELLO_DIR=$${SRC_DIR}/clienthello
+INCLUDEPATH+=$${HELLO_DIR}
+
+SOURCES += $${HELLO_DIR}/main.cpp
+HEADERS += $${SRC_DIR}/log.hpp
 
 include( parser.pri )
 include( server.pri )

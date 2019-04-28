@@ -1,2 +1,2 @@
-HEADERS += $${SRC_DIR}/server.hpp
-SOURCES += $${SRC_DIR}/server.cpp
+HEADERS += $${HELLO_DIR}/server.hpp
+SOURCES += $${HELLO_DIR}/server.cpp
