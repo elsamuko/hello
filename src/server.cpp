@@ -60,8 +60,6 @@ class Server {
 
             LOG_DEBUG( "\nFinished" );
             tcp_socket.close();
-            tcp_acceptor.async_accept( tcp_socket,
-                                       boost::bind( &Server::accept_handler, this, boost::asio::placeholders::error ) );
         }
         void read_TLSRecord( const boost::system::error_code& /*ec*/,
                              std::size_t bytes_transferred ) {
@@ -86,6 +84,7 @@ class Server {
             size_t TLSRecordSize = 5;
             dataTls.resize( TLSRecordSize );
             LOG( tcp_server_endpoint << " << " << tcp_client_endpoint );
+            LOG( tcp_socket.available() );
             boost::asio::async_read( tcp_socket,
                                      boost::asio::buffer( dataTls ),
                                      boost::bind( &Server::read_TLSRecord, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred ) );
