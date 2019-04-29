@@ -34,7 +34,7 @@ class Server {
             LOG( bytes_transferred << "B" );
             LOG( utils::dump( dataHello ) );
 
-            Parser parser( dataHello );
+            ClientHelloParser parser( dataHello );
             parser.parse();
             parser.dump();
 

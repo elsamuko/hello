@@ -10,38 +10,7 @@
 #include "extensions.hpp"
 #include "utils.hpp"
 
-namespace  {
-std::string hex( const size_t size, const void* data ) {
-    std::stringstream out;
-    const uint8_t* casted = reinterpret_cast<const uint8_t*>( data );
-
-    for( size_t i = 0; i < size; ) {
-        out << std::setw( 2 )
-            << std::setfill( '0' )
-            << std::hex
-            << static_cast<int>( casted[i] )
-            << " ";
-
-        if( ++i % 16 == 0 ) {
-            out << std::endl;
-        }
-    }
-
-    return out.str();
-}
-
-std::string hex( const std::string& data ) {
-    return hex( data.size(), data.data() );
-}
-
-template<class T>
-std::string hex( const T& t ) {
-    return hex( sizeof( T ), &t );
-}
-
-}
-
-bool Parser::parse() {
+bool ClientHelloParser::parse() {
     try {
         kaitai::kstream ks( data );
         parsed = std::make_unique<tls_client_hello_t>( &ks );
@@ -52,14 +21,7 @@ bool Parser::parse() {
     return !!parsed;
 }
 
-std::string toString( const std::time_t& t ) {
-    std::tm* tm = std::gmtime( &t );
-    std::stringstream stream;
-    stream << std::put_time( tm, "%F %T" );
-    return stream.str();
-}
-
-void Parser::dump() {
+void ClientHelloParser::dump() {
     if( !parsed ) {
         LOG( "parsed is null" );
         return;
@@ -70,23 +32,23 @@ void Parser::dump() {
     LOG( "size          : " << static_cast<int>( parsed->size() ) );
     LOG( "major         : " << static_cast<int>( parsed->version()->major() ) );
     LOG( "minor         : " << static_cast<int>( parsed->version()->minor() ) );
-    LOG( "random TS     : " << toString( parsed->random()->gmt_unix_time() ) );
-    LOG( "random        : " << hex( parsed->random()->random() ) );
-    LOG( "session ID    : [" << hex( parsed->session_id()->sid() ) << "]" );
+    LOG( "random TS     : " << utils::toString( parsed->random()->gmt_unix_time() ) );
+    LOG( "random        : " << utils::hex( parsed->random()->random() ) );
+    LOG( "session ID    : [" << utils::hex( parsed->session_id()->sid() ) << "]" );
 
     // openssl ciphers -V
     for( const uint16_t& suite : *parsed->cipher_suites()->cipher_suites() ) {
         const auto it = ciphersuite::ciphers.find( suite );
 
         if( it != ciphersuite::ciphers.cend() ) {
-            LOG( "    suite         : " << hex( boost::endian::native_to_big( suite ) )
+            LOG( "    suite         : " << utils::hex( boost::endian::native_to_big( suite ) )
                  << " " << it->second );
         } else {
-            LOG( "    suite         : " << hex( boost::endian::native_to_big( suite ) ) );
+            LOG( "    suite         : " << utils::hex( boost::endian::native_to_big( suite ) ) );
         }
     }
 
-    LOG( "compression   : " << hex( parsed->compression_methods()->compression_methods() ) );
+    LOG( "compression   : " << utils::hex( parsed->compression_methods()->compression_methods() ) );
 
     // https://www.iana.org/assignments/tls-extensiontype-values/tls-extensiontype-values.xhtml
     for( const std::unique_ptr<tls_client_hello_t::extension_t>& extension : *parsed->extensions()->extensions() ) {
@@ -94,10 +56,10 @@ void Parser::dump() {
         const auto it = extension::extensions.find( type );
 
         if( it != ciphersuite::ciphers.cend() ) {
-            LOG( "    extension     : " << hex( boost::endian::native_to_big( type ) )
+            LOG( "    extension     : " << utils::hex( boost::endian::native_to_big( type ) )
                  << " " << it->second );
         } else {
-            LOG( "    extension     : " << hex( boost::endian::native_to_big( type ) ) );
+            LOG( "    extension     : " << utils::hex( boost::endian::native_to_big( type ) ) );
         }
 
         // SNI
@@ -121,7 +83,7 @@ void Parser::dump() {
     }
 }
 
-tls_client_hello_t* Parser::hello() const {
+tls_client_hello_t* ClientHelloParser::hello() const {
     if( parsed ) {
         return parsed.get();
     }

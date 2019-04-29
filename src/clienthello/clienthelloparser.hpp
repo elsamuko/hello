@@ -4,9 +4,9 @@
 
 #include "kaitai/tls_client_hello.h"
 
-class Parser {
+class ClientHelloParser {
     public:
-        Parser( const std::string& data_ ) :
+        ClientHelloParser( const std::string& data_ ) :
             data( data_ ) {}
         bool parse();
         void dump();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <chrono>
 
 namespace utils {
 void toFile( const std::string& filename, const std::string& data );
@@ -15,5 +16,6 @@ std::string hex( const T& t ) {
 
 std::string dump( const std::string& data );
 
+std::string toString( const std::time_t& t );
 }
 

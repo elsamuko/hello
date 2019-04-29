@@ -54,3 +54,10 @@ std::string utils::dump( const std::string& data ) {
 
     return out.str();
 }
+
+std::string utils::toString( const std::time_t& t ) {
+    std::tm* tm = std::gmtime( &t );
+    std::stringstream stream;
+    stream << std::put_time( tm, "%F %T" );
+    return stream.str();
+}
