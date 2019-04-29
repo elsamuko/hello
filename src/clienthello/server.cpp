@@ -1,7 +1,5 @@
 #include "server.hpp"
 
-#include <iomanip>
-
 #include <boost/endian/conversion.hpp>
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/write.hpp>
