@@ -6,14 +6,11 @@ CONFIG -= qt
 MAIN_DIR=../..
 include( ../setup.pri )
 
-HELLO_DIR=$${SRC_DIR}/clienthello
-INCLUDEPATH+=$${HELLO_DIR}
+include( clienthello.pri )
 
-SOURCES += $${HELLO_DIR}/main.cpp
 HEADERS += $${SRC_DIR}/log.hpp
-
-include( parser.pri )
-include( server.pri )
+SOURCES += $${SRC_DIR}/utils.cpp
+HEADERS += $${SRC_DIR}/utils.hpp
 
 # tls header parser
 include( ../kaitai.pri )

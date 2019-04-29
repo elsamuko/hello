@@ -11,33 +11,13 @@
 #include <boost/asio/placeholders.hpp>
 #include <boost/bind.hpp>
 
-#include "parser.hpp"
+#include "clienthelloparser.hpp"
 #include "kaitai/tls_record.h"
+#include "utils.hpp"
 #include "log.hpp"
 
 // derived from
 // https://theboostcpplibraries.com/boost.asio-network-programming#ex.asio_06
-
-std::string dump( const std::string& data ) {
-    std::stringstream out;
-    const uint8_t* casted = reinterpret_cast<const uint8_t*>( data.data() );
-    size_t size = data.size();
-
-    for( size_t i = 0; i < size; ) {
-        out << std::setw( 2 )
-            << std::setfill( '0' )
-            << std::hex
-            << static_cast<int>( casted[i] )
-            << " ";
-
-        if( ++i % 16 == 0 ) {
-            out << std::endl;
-        }
-    }
-
-    return out.str();
-}
-
 class Server {
     private:
         boost::asio::ip::tcp::socket tcp_socket;
@@ -52,7 +32,7 @@ class Server {
                                std::size_t bytes_transferred ) {
 
             LOG( bytes_transferred << "B" );
-            LOG( dump( dataHello ) );
+            LOG( utils::dump( dataHello ) );
 
             Parser parser( dataHello );
             parser.parse();
@@ -65,7 +45,7 @@ class Server {
                              std::size_t bytes_transferred ) {
 
             LOG( bytes_transferred << "B" );
-            LOG( dump( dataTls ) );
+            LOG( utils::dump( dataTls ) );
 
             kaitai::kstream ks( dataTls );
             tls_record_t kt_record( &ks );
