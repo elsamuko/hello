@@ -1,20 +1,19 @@
 #include "clienthelloparser.hpp"
-#include "log.hpp"
-
-#include <iomanip>
-#include <chrono>
 
 #include <boost/endian/conversion.hpp>
 
 #include "ciphersuites.hpp"
 #include "extensions.hpp"
 #include "utils.hpp"
+#include "log.hpp"
 
 bool ClientHelloParser::parse() {
     try {
         kaitai::kstream ks( data );
         parsed = std::make_unique<tls_client_hello_t>( &ks );
     } catch( std::ios_base::failure ex ) {
+        LOG( "Failed to parse : " << ex.what() );
+    } catch( std::runtime_error ex ) {
         LOG( "Failed to parse : " << ex.what() );
     }
 
@@ -28,7 +27,7 @@ void ClientHelloParser::dump() {
     }
 
     // dump
-    LOG( "type          : " << static_cast<int>( parsed->type() ) );
+    LOG( "type          : " << utils::hex( parsed->type() ) );
     LOG( "size          : " << static_cast<int>( parsed->size() ) );
     LOG( "major         : " << static_cast<int>( parsed->version()->major() ) );
     LOG( "minor         : " << static_cast<int>( parsed->version()->minor() ) );
