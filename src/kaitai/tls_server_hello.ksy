@@ -23,7 +23,7 @@ seq:
     type: u2
 
   - id: compression_method
-    type: u2
+    type: u1
 
   - id: extensions
     type: extensions
