@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE( server_parse_good ) {
     ServerHelloParser parser( data );
     BOOST_REQUIRE( parser.parse() );
     parser.dump();
-    BOOST_CHECK_EQUAL( parser.hello()->size(), 61 );
+    BOOST_CHECK_EQUAL( parser.hello()->size(), 57 );
 }
 
 BOOST_AUTO_TEST_CASE( server_parse_bad ) {
