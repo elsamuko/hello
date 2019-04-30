@@ -36,7 +36,7 @@ class Server {
             parser.parse();
             parser.dump();
 
-            LOG_DEBUG( "\nFinished" );
+            LOG( "Finished" );
             tcp_socket.close();
         }
         void read_TLSRecord( const boost::system::error_code& /*ec*/,
