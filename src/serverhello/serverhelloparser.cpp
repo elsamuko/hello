@@ -2,6 +2,7 @@
 
 #include <boost/endian/conversion.hpp>
 
+#include "ciphersuites.hpp"
 #include "utils.hpp"
 #include "log.hpp"
 
@@ -32,7 +33,17 @@ void ServerHelloParser::dump() {
     LOG( "random TS     : " << utils::toString( parsed->random()->gmt_unix_time() ) );
     LOG( "random        : " << utils::hex( parsed->random()->random() ) );
     LOG( "session ID    : [" << utils::hex( parsed->session_id()->sid() ) << "]" );
-    LOG( "cipher suite  : " << utils::hex( boost::endian::native_to_big( parsed->cipher_suite() ) ) );
+
+    uint16_t suite = parsed->cipher_suite();
+    const auto it = ciphersuite::ciphers.find( suite );
+
+    if( it != ciphersuite::ciphers.cend() ) {
+        LOG( "cipher suite  : " << utils::hex( boost::endian::native_to_big( suite ) )
+             << " " << it->second );
+    } else {
+        LOG( "cipher suite  : " << utils::hex( boost::endian::native_to_big( suite ) ) );
+    }
+
     LOG( "compression   : " << utils::hex( parsed->compression_method() ) );
 
     for( const std::unique_ptr<tls_server_hello_t::extension_t>& extension : *parsed->extensions()->extensions() ) {

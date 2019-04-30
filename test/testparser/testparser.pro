@@ -10,10 +10,10 @@ SOURCES += testparser.cpp
 HEADERS += $${SRC_DIR}/log.hpp
 SOURCES += $${SRC_DIR}/utils.cpp
 HEADERS += $${SRC_DIR}/utils.hpp
+HEADERS += $${SRC_DIR}/ciphersuites.hpp
 
 CLIENT_HELLO_DIR=$${SRC_DIR}/clienthello
 INCLUDEPATH+=$${CLIENT_HELLO_DIR}
-HEADERS += $${CLIENT_HELLO_DIR}/ciphersuites.hpp
 HEADERS += $${CLIENT_HELLO_DIR}/extensions.hpp
 HEADERS += $${CLIENT_HELLO_DIR}/clienthelloparser.hpp
 SOURCES += $${CLIENT_HELLO_DIR}/clienthelloparser.cpp
