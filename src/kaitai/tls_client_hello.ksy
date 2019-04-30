@@ -5,7 +5,7 @@ meta:
 
 seq:
   - id: type
-    type: u1
+    contents: [0x01]
 
   - id: size
     type: b24
