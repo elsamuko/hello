@@ -89,13 +89,19 @@ class Client {
             boost::asio::ip::tcp::resolver resolver( iocontext );
             boost::asio::ip::tcp::resolver::results_type results = resolver.resolve( host, port );
 
-            boost::asio::connect( tcp_socket, results );
-            write_ClientHello();
+            boost::system::error_code ec;
+            boost::asio::connect( tcp_socket, results, ec );
+
+            if( !ec ) {
+                write_ClientHello();
+            } else {
+                LOG( "Could not connect to " << host << ":" << port );
+            }
         }
 };
 
-void client::run() {
+void client::run( const std::string& host, const std::string& port ) {
     boost::asio::io_context iocontext;
-    Client client( iocontext, "news.ycombinator.com", "443" );
+    Client client( iocontext, host, port );
     iocontext.run();
 }
