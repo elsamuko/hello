@@ -1,3 +1,7 @@
+TEMPLATE = app
+CONFIG += console c++17
+CONFIG -= app_bundle
+CONFIG -= qt
 
 # set debug/release info
 CONFIG(debug, debug|release) {

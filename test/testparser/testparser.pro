@@ -1,29 +1,11 @@
-TEMPLATE = app
-CONFIG += console c++17
-CONFIG -= app_bundle
-CONFIG -= qt
+MAIN_DIR=$${_PRO_FILE_PWD_}/../..
 
-MAIN_DIR=../..
 include( $${MAIN_DIR}/qmake/setup.pri )
+include( $${MAIN_DIR}/qmake/commons.pri )
+
+include( $${MAIN_DIR}/qmake/serverhello/serverhello.pri )
+include( $${MAIN_DIR}/qmake/clienthello/clienthello.pri )
 
 SOURCES += testparser.cpp
-HEADERS += $${SRC_DIR}/log.hpp
-SOURCES += $${SRC_DIR}/utils.cpp
-HEADERS += $${SRC_DIR}/utils.hpp
-HEADERS += $${SRC_DIR}/ciphersuites.hpp
-
-CLIENT_HELLO_DIR=$${SRC_DIR}/clienthello
-INCLUDEPATH+=$${CLIENT_HELLO_DIR}
-HEADERS += $${CLIENT_HELLO_DIR}/extensions.hpp
-HEADERS += $${CLIENT_HELLO_DIR}/clienthelloparser.hpp
-SOURCES += $${CLIENT_HELLO_DIR}/clienthelloparser.cpp
-
-SERVER_HELLO_DIR=$${SRC_DIR}/serverhello
-INCLUDEPATH+=$${SERVER_HELLO_DIR}
-HEADERS += $${SERVER_HELLO_DIR}/serverhelloparser.hpp
-SOURCES += $${SERVER_HELLO_DIR}/serverhelloparser.cpp
-
-include( $${MAIN_DIR}/qmake/kaitai.pri )
-include( $${MAIN_DIR}/qmake/boost.pri )
-
-linux: LIBS += -lpthread
+SOURCES -= $${CLIENT_HELLO_DIR}/main.cpp
+SOURCES -= $${SERVER_HELLO_DIR}/main.cpp
