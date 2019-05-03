@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# ./scripts/cipher_suites.sh > src/ciphersuites.hpp
 
 echo "#pragma once
 
@@ -18,7 +19,8 @@ static std::map<uint16_t,const char*> ciphers = {"
 printf "    { fromUint8_t( { %s } ), \"%s\" },\n" "0x00,0xFF" "TLS_EMPTY_RENEGOTIATION_INFO_SCSV"
 printf "    { fromUint8_t( { %s } ), \"%s\" },\n" "0x56,0x00" "TLS_FALLBACK_SCSV"
 
-openssl ciphers -V | awk '{
+# https://www.openssl.org/docs/man1.1.1/man1/ciphers.html
+openssl ciphers -V 'ALL:eNULL:@STRENGTH' | awk '{
     printf "    { fromUint8_t( { %s } ), \"%s\" },\n", $1, $3
 }'
 
