@@ -14,8 +14,6 @@ std::string hex( const T& t ) {
     return hex( sizeof( T ), &t );
 }
 
-std::string dump( const std::string& data );
-
 std::string toString( const std::time_t& t );
 }
 

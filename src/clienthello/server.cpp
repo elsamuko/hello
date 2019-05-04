@@ -30,7 +30,7 @@ class Server {
                                std::size_t bytes_transferred ) {
 
             LOG( bytes_transferred << "B" );
-            LOG( utils::dump( dataHello ) );
+            LOG( utils::hex( dataHello ) );
 
             ClientHelloParser parser( dataHello );
             parser.parse();
@@ -43,7 +43,7 @@ class Server {
                              std::size_t bytes_transferred ) {
 
             LOG( bytes_transferred << "B" );
-            LOG( utils::dump( dataTls ) );
+            LOG( utils::hex( dataTls ) );
 
             kaitai::kstream ks( dataTls );
             tls_record_t kt_record( &ks );

@@ -32,7 +32,7 @@ void ClientHelloParser::dump() {
     LOG( "major         : " << static_cast<int>( parsed->version()->major() ) );
     LOG( "minor         : " << static_cast<int>( parsed->version()->minor() ) );
     LOG( "random TS     : " << utils::toString( parsed->random()->gmt_unix_time() ) );
-    LOG( "random        : " << utils::hex( parsed->random()->random() ) );
+    LOG( "random        : \n" << utils::hex( parsed->random()->random() ) );
     LOG( "session ID    : [" << utils::hex( parsed->session_id()->sid() ) << "]" );
 
     // openssl ciphers -V

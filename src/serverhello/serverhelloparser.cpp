@@ -3,6 +3,7 @@
 #include <boost/endian/conversion.hpp>
 
 #include "ciphersuites.hpp"
+#include "extensions.hpp"
 #include "utils.hpp"
 #include "log.hpp"
 
@@ -31,7 +32,7 @@ void ServerHelloParser::dump() {
     LOG( "major         : " << static_cast<int>( parsed->version()->major() ) );
     LOG( "minor         : " << static_cast<int>( parsed->version()->minor() ) );
     LOG( "random TS     : " << utils::toString( parsed->random()->gmt_unix_time() ) );
-    LOG( "random        : " << utils::hex( parsed->random()->random() ) );
+    LOG( "random        : \n" << utils::hex( parsed->random()->random() ) );
     LOG( "session ID    : [" << utils::hex( parsed->session_id()->sid() ) << "]" );
 
     uint16_t suite = parsed->cipher_suite();
@@ -48,7 +49,14 @@ void ServerHelloParser::dump() {
 
     for( const std::unique_ptr<tls_server_hello_t::extension_t>& extension : *parsed->extensions()->extensions() ) {
         uint16_t type = extension->type();
-        LOG( "    extension     : " << utils::hex( boost::endian::native_to_big( type ) ) );
+        const auto it = extension::extensions.find( type );
+
+        if( it != ciphersuite::ciphers.cend() ) {
+            LOG( "    extension     : " << utils::hex( boost::endian::native_to_big( type ) )
+                 << " " << it->second );
+        } else {
+            LOG( "    extension     : " << utils::hex( boost::endian::native_to_big( type ) ) );
+        }
     }
 
 }

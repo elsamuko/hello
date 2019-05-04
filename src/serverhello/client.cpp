@@ -33,7 +33,7 @@ class Client {
 
             LOG( bytes_transferred << "B" );
             utils::toFile( "server_hello.raw", dataServerHello );
-            LOG( utils::dump( dataServerHello ) );
+            LOG( utils::hex( dataServerHello ) );
 
             ServerHelloParser parser( dataServerHello );
             parser.parse();
@@ -47,7 +47,7 @@ class Client {
             if( ec ) { LOG( "Error" << ec ); return; }
 
             LOG( bytes_transferred << "B" );
-            LOG( utils::dump( dataServerTls ) );
+            LOG( utils::hex( dataServerTls ) );
 
             kaitai::kstream ks( dataServerTls );
             tls_record_t kt_record( &ks );
