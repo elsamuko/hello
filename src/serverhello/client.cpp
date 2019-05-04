@@ -27,8 +27,9 @@ class Client {
         std::string dataServerHello;
 
     private:
-        void read_ServerHello( const boost::system::error_code& /*ec*/,
+        void read_ServerHello( const boost::system::error_code& ec,
                                std::size_t bytes_transferred ) {
+            if( ec ) { LOG( "Error" << ec ); return; }
 
             LOG( bytes_transferred << "B" );
             utils::toFile( "server_hello.raw", dataServerHello );
@@ -41,8 +42,9 @@ class Client {
             LOG( "Finished" );
             tcp_socket.close();
         }
-        void read_TLSRecord( const boost::system::error_code& /*ec*/,
+        void read_TLSRecord( const boost::system::error_code& ec,
                              std::size_t bytes_transferred ) {
+            if( ec ) { LOG( "Error" << ec ); return; }
 
             LOG( bytes_transferred << "B" );
             LOG( utils::dump( dataServerTls ) );
