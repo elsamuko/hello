@@ -6,8 +6,6 @@ INCLUDEPATH += $${LIB_DIR}/boost/include
 unix {
     QMAKE_CXXFLAGS += -isystem $${LIB_DIR}/boost/include
     LIBS += $${BOOST_LIB_DIR}/libboost_system.a
-    LIBS += $${BOOST_LIB_DIR}/libboost_thread.a
-    LIBS += $${BOOST_LIB_DIR}/libboost_log.a
 
     unit_test {
         LIBS += $${BOOST_LIB_DIR}/libboost_unit_test_framework.a
