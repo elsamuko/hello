@@ -62,17 +62,22 @@ class Client {
         }
 
         typedef struct __attribute__( ( packed ) ) {
-            uint8_t content_type;  // 0x16
-            uint16_t version;
+            uint8_t content_type = 0x16; // 0x16
+            uint16_t version = 0x0103;   // v3.1
             uint16_t length;
         } TLSRecord;
 
         void write_ClientHello() {
-            dataClientTls = { 0x16, 0x03, 0x01, 0x01, 0x4b };
+            TLSRecord record;
+            record.length = boost::endian::native_to_big( static_cast<uint16_t>( sizeof( client_hello_raw ) ) );
+
+            dataClientTls = std::string( reinterpret_cast<const char*>( &record ), sizeof( record ) );
             size_t written = boost::asio::write( tcp_socket, boost::asio::buffer( dataClientTls ) );
+            assert( written == dataClientTls.size() );
 
             dataClientHello = std::string( reinterpret_cast<const char*>( client_hello_raw ), sizeof( client_hello_raw ) );
             size_t written2 = boost::asio::write( tcp_socket, boost::asio::buffer( dataClientHello ) );
+            assert( written2 == dataClientHello.size() );
 
             size_t TLSRecordSize = 5;
             dataServerTls.resize( TLSRecordSize );
