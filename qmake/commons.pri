@@ -1,7 +1,10 @@
 HEADERS += $${SRC_DIR}/log.hpp
 SOURCES += $${SRC_DIR}/log.cpp
-SOURCES += $${SRC_DIR}/utils.cpp
 HEADERS += $${SRC_DIR}/utils.hpp
+SOURCES += $${SRC_DIR}/utils.cpp
+
+HEADERS += $${SRC_DIR}/hellogenerator.hpp
+SOURCES += $${SRC_DIR}/hellogenerator.cpp
 
 # ./scripts/cipher_suites.sh > src/ciphersuites.hpp
 HEADERS += $${SRC_DIR}/ciphersuites.hpp
