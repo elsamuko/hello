@@ -1,6 +1,4 @@
 #!/usr/bin/env groovy
-@Grab(group='io.kaitai', module='kaitai-struct-runtime', version='0.8')
-
 // http://programmingitch.blogspot.com/2010/04/groovy-sockets-example.html
 
 import java.net.ServerSocket
