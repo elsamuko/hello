@@ -21,7 +21,14 @@ Logger::Logger( const char* file, int line, const char* function ) {
     out << " " << threadId() << " ";
     out.fill( ' ' );
     out.width( 25 );
-    out << ( strrchr( file, '/' ) + 1 ) << " ";
+
+    const char* pos = strrchr( file, '/' );
+
+    if( !pos ) { pos = strrchr( file, '\\' ); }
+
+    if( !pos ) { pos = "/nofile"; }
+
+    out << ( pos + 1 ) << " ";
     out.width( 25 );
     out << function << "(";
     out.width( 4 );
