@@ -63,11 +63,11 @@ class Client {
                                      boost::bind( &Client::read_ServerHello, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred ) );
         }
 
-        typedef struct __attribute__( ( packed ) ) {
+        struct TLSRecord {
             uint8_t content_type = 0x16; // 0x16
             uint16_t version = 0x0103;   // v3.1
             uint16_t length;
-        } TLSRecord;
+        };
 
         void write_ClientHello() {
             TLSRecord record;
