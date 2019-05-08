@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <chrono>
 
 void utils::toFile( const std::string& filename, const std::string& data ) {
     std::ofstream file( filename.c_str(), std::ios::out | std::ios::binary );
