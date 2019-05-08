@@ -51,7 +51,7 @@ void ServerHelloParser::dump() {
         uint16_t type = extension->type();
         const auto it = extension::extensions.find( type );
 
-        if( it != ciphersuite::ciphers.cend() ) {
+        if( it != extension::extensions.cend() ) {
             LOG( "    extension     : " << utils::hex( boost::endian::native_to_big( type ) )
                  << " " << it->second );
         } else {
