@@ -1,5 +1,6 @@
 TEMPLATE = app
 CONFIG += console c++17
+CONFIG += static
 CONFIG -= app_bundle
 CONFIG -= qt
 
@@ -13,11 +14,7 @@ CONFIG(release, debug|release) {
     COMPILE_MODE=release
 }
 
-CONFIG -= qt
-CONFIG += c++1z
-CONFIG += console
-CONFIG -= app_bundle
-CONFIG += static
+win32:include( $${MAIN_DIR}/qmake/win.pri )
 
 macx:       PLATFORM=mac
 win32:      PLATFORM=win
