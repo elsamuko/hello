@@ -17,7 +17,7 @@ esac
 
 PROJECT=boost
 # ./b2 --show-libraries
-NEEDED_LIBS="--with-system --with-test"
+NEEDED_LIBS="--with-system --with-test --with-date_time"
 VERSION="1.70.0"
 VERSION_DL="${VERSION//./_}"
 DL_URL="https://dl.bintray.com/boostorg/release/${VERSION}/source/boost_${VERSION_DL}.tar.gz" 
