@@ -12,6 +12,7 @@
 
 #include "serverhelloparser.hpp"
 #include "kaitai/tls_record.h"
+#include "hellogenerator.hpp"
 #include "log.hpp"
 #include "utils.hpp"
 #include "client_hello_raw.hpp"
@@ -62,12 +63,6 @@ class Client {
                                      boost::asio::buffer( dataServerHello ),
                                      boost::bind( &Client::read_ServerHello, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred ) );
         }
-
-        struct TLSRecord {
-            uint8_t content_type = 0x16; // 0x16
-            uint16_t version = 0x0103;   // v3.1
-            uint16_t length;
-        };
 
         void write_ClientHello() {
             TLSRecord record;

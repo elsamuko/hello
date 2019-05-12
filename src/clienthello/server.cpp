@@ -11,6 +11,7 @@
 
 #include "clienthelloparser.hpp"
 #include "kaitai/tls_record.h"
+#include "hellogenerator.hpp"
 #include "utils.hpp"
 #include "log.hpp"
 
@@ -22,19 +23,33 @@ class Server {
         boost::asio::ip::tcp::endpoint tcp_client_endpoint;
         boost::asio::ip::tcp::endpoint tcp_server_endpoint;
         boost::asio::ip::tcp::acceptor tcp_acceptor;
-        std::string dataTls;
-        std::string dataHello;
+        std::string dataClientTls;
+        std::string dataClientHello;
+        std::string dataServerTls;
+        std::string dataServerHello;
 
     private:
         void read_ClientHello( const boost::system::error_code& /*ec*/,
                                std::size_t bytes_transferred ) {
 
             LOG( bytes_transferred << "B" );
-            LOG( utils::hex( dataHello ) );
+            LOG( utils::hex( dataClientHello ) );
 
-            ClientHelloParser parser( dataHello );
+            ClientHelloParser parser( dataClientHello );
             parser.parse();
             parser.dump();
+
+            dataServerHello = hello::server();
+            TLSRecord record;
+            record.length = boost::endian::native_to_big( static_cast<uint16_t>( dataServerHello.size() ) );
+
+            dataServerTls = std::string( reinterpret_cast<const char*>( &record ), sizeof( record ) );
+            size_t written = boost::asio::write( tcp_socket, boost::asio::buffer( dataServerTls ) );
+            assert( written == dataServerTls.size() );
+
+            LOG( "Sending server hello" );
+            size_t written2 = boost::asio::write( tcp_socket, boost::asio::buffer( dataServerHello ) );
+            assert( written2 == dataServerHello.size() );
 
             LOG( "Finished" );
             tcp_socket.close();
@@ -43,9 +58,9 @@ class Server {
                              std::size_t bytes_transferred ) {
 
             LOG( bytes_transferred << "B" );
-            LOG( utils::hex( dataTls ) );
+            LOG( utils::hex( dataClientTls ) );
 
-            kaitai::kstream ks( dataTls );
+            kaitai::kstream ks( dataClientTls );
             tls_record_t kt_record( &ks );
 
             LOG( "\n" );
@@ -53,18 +68,18 @@ class Server {
             LOG( "TLS Version   : " << std::hex << kt_record.version() );
             LOG( "Length        : " << std::dec << kt_record.length() );
 
-            dataHello.resize( kt_record.length() );
+            dataClientHello.resize( kt_record.length() );
             boost::asio::async_read( tcp_socket,
-                                     boost::asio::buffer( dataHello ),
+                                     boost::asio::buffer( dataClientHello ),
                                      boost::bind( &Server::read_ClientHello, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred ) );
         }
         void accept_handler( const boost::system::error_code& /*ec*/ ) {
             size_t TLSRecordSize = 5;
-            dataTls.resize( TLSRecordSize );
+            dataClientTls.resize( TLSRecordSize );
             LOG( tcp_server_endpoint << " << " << tcp_client_endpoint );
             LOG( tcp_socket.available() );
             boost::asio::async_read( tcp_socket,
-                                     boost::asio::buffer( dataTls ),
+                                     boost::asio::buffer( dataClientTls ),
                                      boost::bind( &Server::read_TLSRecord, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred ) );
         }
 
@@ -75,6 +90,8 @@ class Server {
             tcp_acceptor{iocontext, tcp_server_endpoint} {
 
             LOG( "Visit https://" << tcp_server_endpoint );
+            LOG( "openssl s_client -servername \"localhost\" -connect " << tcp_server_endpoint );
+
             tcp_acceptor.listen();
             tcp_acceptor.async_accept( tcp_socket,
                                        tcp_client_endpoint,
